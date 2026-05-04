@@ -1,24 +1,3 @@
-"""
-╔══════════════════════════════════════════════════╗
-║   TELEGRAM USERBOT — AUTO KEYWORD NOTIFIER       ║
-║   v2.0 | Setup Wizard + All Channels Monitor     ║
-╚══════════════════════════════════════════════════╝
-
-Features:
-  ✅ Setup wizard interaktif (input sekali, auto simpan ke .env)
-  ✅ Monitor SEMUA channel/grup/private chat sekaligus
-  ✅ Notify ke username orang lain atau chat ID manapun
-  ✅ Multi-keyword dengan cooldown anti-spam
-  ✅ Log ke file JSON per match
-  ✅ Statistik live setiap 5 menit
-
-Requirements:
-    pip install telethon colorama python-dotenv
-
-Run:
-    python telegram_keyword_notifier.py
-"""
-
 import asyncio
 import re
 import os
