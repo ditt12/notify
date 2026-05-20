@@ -1,40 +1,30 @@
---// TELEGRAM CONNECTED TEST
-
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
 
 local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
-local CHAT_ID = "6554802149"
+local CHAT_ID = "6554802149" -- isi dari userinfobot
 
 local request =
     (syn and syn.request)
     or http_request
     or request
 
-if not request then
-    warn("HTTP request not supported")
-    return
-end
-
 local function send(text)
-    local success, err = pcall(function()
+    if not request then return end
+
+    pcall(function()
         request({
             Url = "https://api.telegram.org/bot" .. TOKEN .. "/sendMessage",
             Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
+            Headers = {["Content-Type"] = "application/json"},
             Body = HttpService:JSONEncode({
                 chat_id = CHAT_ID,
                 text = text
             })
         })
     end)
-
-    print("[DEBUG] send status:", success, err)
 end
 
-send("✅ CONNECTED TEST\nUser: " .. LocalPlayer.Name)
-print("CONNECTED SENT")
+send("✅ CONNECTED\nUser: " .. LocalPlayer.Name)
