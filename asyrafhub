@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
 
-local TOKEN = "ISI_TOKEN_KAMU_DI_SINI"
+local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
 local CHAT_ID = "6554802149"
 
 local request =
