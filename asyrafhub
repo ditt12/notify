@@ -1,349 +1,248 @@
---// =========================================
---// AsyrafHub Roblox Monitoring
---// Error Detection + Telegram Notify
---// =========================================
+--// =========================================================
+--// ASYRAF HUB - ROBLOX ERROR DETECTOR
+--// TELEGRAM ERROR NOTIFIER
+--// =========================================================
 
-local HttpService = game:GetService("HttpService")
+--[[
+    FITUR:
+    ✅ Detect Roblox Error Code
+    ✅ Notify Telegram otomatis
+    ✅ Full error message
+    ✅ Username auto detect
+    ✅ PlaceId + JobId
+    ✅ Clean format
+]]
+
+--// =========================================================
+--// TELEGRAM CONFIG
+--// =========================================================
+
+local TOKEN = "MASUKKAN_BOT_TOKEN"
+local CHAT_ID = "MASUKKAN_CHAT_ID"
+
+--// =========================================================
+--// SERVICES
+--// =========================================================
+
 local Players = game:GetService("Players")
-local GuiService = game:GetService("GuiService")
-local MarketplaceService = game:GetService("MarketplaceService")
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 local TeleportService = game:GetService("TeleportService")
 
 local LocalPlayer = Players.LocalPlayer
 
-local CONFIG_FILE = "asyrafhub.json"
+--// =========================================================
+--// REQUEST FUNCTION
+--// =========================================================
 
-local restartCount = 0
-local config = {}
-
---=========================================
--- FILE SYSTEM
---=========================================
-
-local function isFile(path)
-    return isfile and isfile(path)
-end
-
-local function saveJSON(path, data)
-    if writefile then
-        writefile(path, HttpService:JSONEncode(data))
-    end
-end
-
-local function loadJSON(path)
-    if readfile then
-        return HttpService:JSONDecode(readfile(path))
-    end
-end
-
---=========================================
--- INPUT CONFIG
---=========================================
-
-if isFile(CONFIG_FILE) then
-    config = loadJSON(CONFIG_FILE)
-
-    print("[AsyrafHub] Config Loaded")
-
-else
-
-    local token = ""
-    local chatid = ""
-
-    if identifyexecutor and identifyexecutor():lower():find("delta") then
-        token = tostring(getgenv().BOT_TOKEN or "")
-        chatid = tostring(getgenv().CHAT_ID or "")
-    end
-
-    if token == "" then
-        token = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
-    end
-
-    if chatid == "" then
-        chatid = "6554802149"
-    end
-
-    config = {
-        token = token,
-        chat_id = chatid
-    }
-
-    saveJSON(CONFIG_FILE, config)
-
-    print("[AsyrafHub] Config Saved")
-end
-
---=========================================
--- REQUEST FUNCTION
---=========================================
-
-local requestfunc =
+local request =
     (syn and syn.request)
     or (http and http.request)
     or http_request
     or request
     or fluxus and fluxus.request
 
---=========================================
--- TELEGRAM SEND
---=========================================
+if not request then
+    warn("Executor tidak support request")
+    return
+end
 
-local function sendTelegram(title, description, fields)
+--// =========================================================
+--// DEVICE / GAME INFO
+--// =========================================================
 
-    local text = ""
-    text = text .. "━━━━━━━━━━━━━━\n"
-    text = text .. "*" .. title .. "*\n\n"
-    text = text .. description .. "\n\n"
+local USERNAME = LocalPlayer.Name
+local DISPLAYNAME = LocalPlayer.DisplayName
+local USERID = LocalPlayer.UserId
 
-    for _, field in ipairs(fields) do
-        text = text .. field .. "\n\n"
+local PLACEID = game.PlaceId
+local JOBID = game.JobId
+
+local EXECUTOR = identifyexecutor and identifyexecutor() or "Unknown"
+
+local function getGameName()
+    local success, result = pcall(function()
+        return game:GetService("MarketplaceService"):GetProductInfo(PLACEID).Name
+    end)
+
+    if success then
+        return result
     end
 
-    text = text .. "━━━━━━━━━━━━━━"
+    return "Unknown"
+end
 
-    local body = {
-        chat_id = config.chat_id,
-        text = text,
+local GAMENAME = getGameName()
+
+--// =========================================================
+--// TELEGRAM SEND
+--// =========================================================
+
+local function sendTelegram(message)
+    local url =
+        "https://api.telegram.org/bot"
+        .. TOKEN ..
+        "/sendMessage"
+
+    local data = {
+        chat_id = CHAT_ID,
+        text = message,
         parse_mode = "Markdown"
     }
 
-    local success, response = pcall(function()
+    local body = HttpService:JSONEncode(data)
 
-        return requestfunc({
-            Url = "https://api.telegram.org/bot" .. config.token .. "/sendMessage",
+    local success, response = pcall(function()
+        return request({
+            Url = url,
             Method = "POST",
             Headers = {
                 ["Content-Type"] = "application/json"
             },
-            Body = HttpService:JSONEncode(body)
+            Body = body
         })
-
     end)
 
     if success then
-        print("[AsyrafHub] Telegram Sent")
+        print("[ASYRAF HUB] Telegram notify sent")
     else
-        warn("[AsyrafHub] Failed Send Telegram")
+        warn("[ASYRAF HUB] Failed send telegram")
     end
 end
 
---=========================================
--- GAME INFO
---=========================================
+--// =========================================================
+--// FORMAT MESSAGE
+--// =========================================================
 
-local GameName = "Unknown"
+local function buildMessage(errorCode, fullError)
+    local text =
+[[
+🚨 *ROBLOX ERROR DETECTED*
 
-pcall(function()
-    GameName = MarketplaceService:GetProductInfo(game.PlaceId).Name
-end)
+━━━━━━━━━━━━━━
+👤 *PLAYER INFO*
+━━━━━━━━━━━━━━
 
---=========================================
--- START NOTIFY
---=========================================
+🪪 Username:
+`]] .. USERNAME .. [[`
 
-sendTelegram(
-    "🟢 Account Started",
-    "Account `" .. LocalPlayer.Name .. "` started monitoring",
-    {
-        "👤 *Username*\n`" .. LocalPlayer.Name .. "`",
+👤 Display Name:
+`]] .. DISPLAYNAME .. [[`
 
-        "🎮 *Game*\n`" .. GameName .. "`",
+🆔 UserId:
+`]] .. USERID .. [[`
 
-        "🆔 *Place ID*\n`" .. tostring(game.PlaceId) .. "`",
+━━━━━━━━━━━━━━
+🎮 *GAME INFO*
+━━━━━━━━━━━━━━
 
-        "📍 *Job ID*\n`" .. tostring(game.JobId) .. "`",
+🎯 Game:
+`]] .. GAMENAME .. [[`
 
-        "🌍 *Server Link*\nhttps://www.roblox.com/games/" 
-            .. game.PlaceId,
+🎮 PlaceId:
+`]] .. PLACEID .. [[`
 
-        "📡 *Status*\n`Running`",
+📡 JobId:
+`]] .. JOBID .. [[`
 
-        "⏱️ *Time*\n`" .. os.date("%X") .. "`"
-    }
-)
+━━━━━━━━━━━━━━
+💻 *DEVICE INFO*
+━━━━━━━━━━━━━━
 
---=========================================
--- FULL ERROR LIST
---=========================================
+⚡ Executor:
+`]] .. EXECUTOR .. [[`
 
-local ErrorCodes = {
+━━━━━━━━━━━━━━
+❌ *ERROR INFO*
+━━━━━━━━━━━━━━
 
-    -- COMMON
-    ["256"] = "Developer manually kicked player",
-    ["257"] = "Service unavailable",
-    ["258"] = "Teleport failed",
-    ["260"] = "Roblox servers busy",
-    ["261"] = "Connection lost",
-    ["262"] = "Failed data connection",
-    ["263"] = "Connection interrupted",
-    ["264"] = "Account launched from another device",
-    ["265"] = "Teleport service issue",
-    ["266"] = "Connection timeout",
-    ["267"] = "Kicked from experience",
-    ["268"] = "Unexpected client behavior",
-    ["271"] = "Banned from game",
-    ["272"] = "Security key mismatch",
-    ["273"] = "Account restricted",
-    ["274"] = "Server shutdown",
-    ["275"] = "Game owner restricted access",
-    ["277"] = "Lost connection to game server",
-    ["278"] = "Game unavailable",
-    ["279"] = "Failed connection",
-    ["280"] = "Outdated Roblox version",
-    ["282"] = "Disconnected from server",
-    ["284"] = "Unauthorized join",
-    ["285"] = "Client mismatch",
-    ["286"] = "Access denied",
+🚫 Error Code:
+`]] .. tostring(errorCode) .. [[`
 
-    -- TELEPORT
-    ["522"] = "Teleport failed",
-    ["523"] = "Teleport restricted",
-    ["524"] = "No server available",
-    ["525"] = "Teleport queue full",
-    ["526"] = "Cross platform restricted",
-    ["527"] = "Teleport expired",
-    ["528"] = "Reserved server invalid",
-    ["529"] = "HTTP failure",
-    ["530"] = "Private server denied",
-    ["533"] = "Teleport flood detected",
+📄 Full Error:
+``` id="y6k0a6"
+]] .. tostring(fullError) .. [[
+``` id="o02dfm"
 
-    -- AUTH
-    ["610"] = "Authentication issue",
-    ["611"] = "Login failed",
-    ["612"] = "Session expired",
-    ["613"] = "Security verification required",
+━━━━━━━━━━━━━━
+⏱️ Time:
+`]] .. os.date("%d/%m/%Y %H:%M:%S") .. [[`
+]]
 
-    -- VOICE
-    ["770"] = "Voice unavailable",
-    ["771"] = "Voice restricted",
+    return text
+end
 
-    -- TELEPORT STATE
-    ["769"] = "Teleport failed",
-    ["772"] = "Reserved server error",
+--// =========================================================
+--// ERROR DETECTION
+--// =========================================================
 
-    -- NETWORK
-    ["901"] = "Unstable internet",
-    ["902"] = "Network disconnected",
-    ["903"] = "DNS failed",
-    ["904"] = "Packet loss",
-    ["905"] = "High ping",
-    ["906"] = "Internet blocked",
+local alreadyDetected = false
 
-    -- EXECUTOR
-    ["1001"] = "Executor crashed",
-    ["1002"] = "Environment destroyed",
-    ["1003"] = "Injection failed",
-    ["1004"] = "Lua runtime error",
-    ["1005"] = "Executor disconnected",
+local function detectError()
+    if alreadyDetected then
+        return
+    end
 
-    -- CUSTOM
-    ["2001"] = "AFK timeout",
-    ["2002"] = "Character frozen",
-    ["2003"] = "Auto farm stopped",
-    ["2004"] = "Nil instance",
-    ["2005"] = "Heartbeat timeout",
-    ["2006"] = "Game freeze",
-    ["2007"] = "Critical FPS drop",
-    ["2008"] = "Rejoin required"
-}
+    local PromptGui = CoreGui:FindFirstChild("RobloxPromptGui")
 
---=========================================
--- ERROR DETECTION
---=========================================
+    if not PromptGui then
+        return
+    end
 
-local function detectError(message)
+    local TextLabel =
+        PromptGui:FindFirstChildWhichIsA(
+            "TextLabel",
+            true
+        )
 
-    for code, reason in pairs(ErrorCodes) do
+    if not TextLabel then
+        return
+    end
 
-        if tostring(message):find(code) then
+    local text = TextLabel.Text
 
-            restartCount += 1
+    if not text or text == "" then
+        return
+    end
 
-            sendTelegram(
-                "🔴 Crash Detected",
-                "Account `" .. LocalPlayer.Name .. "` crashed/rejoined",
-                {
+    local errorCode =
+        text:match("Error Code:?%s*(%d+)")
+        or text:match("error code:?%s*(%d+)")
+        or text:match("(%d+)")
 
-                    "👤 *Username*\n`" .. LocalPlayer.Name .. "`",
+    if errorCode then
+        alreadyDetected = true
 
-                    "⚠️ *Error Code*\n`" .. code .. "`",
+        print("[ASYRAF HUB] Error detected:", errorCode)
 
-                    "📄 *Reason*\n`" .. reason .. "`",
+        local msg = buildMessage(errorCode, text)
 
-                    "📝 *Message*\n`" .. tostring(message) .. "`",
-
-                    "🔁 *Restart Count*\n`" .. restartCount .. "`",
-
-                    "📡 *Action*\n`Auto Restarting...`",
-
-                    "🎮 *Game*\n`" .. GameName .. "`",
-
-                    "⏱️ *Time*\n`" .. os.date("%X") .. "`"
-                }
-            )
-
-            warn("[AsyrafHub] Error Detected:", code)
-
-            break
-        end
+        sendTelegram(msg)
     end
 end
 
---=========================================
--- GUI ERROR DETECT
---=========================================
+--// =========================================================
+--// START
+--// =========================================================
 
-GuiService.ErrorMessageChanged:Connect(function(message)
+print([[
+=====================================
+      ASYRAF HUB ERROR DETECTOR
+=====================================
 
-    if message and message ~= "" then
+Status  : Running
+Username: ]] .. USERNAME .. [[
+Game    : ]] .. GAMENAME .. [[
 
-        print("[AsyrafHub] Error:", message)
+Waiting for Roblox error...
+]])
 
-        detectError(message)
+--// =========================================================
+--// LOOP
+--// =========================================================
 
-    end
-end)
-
---=========================================
--- TELEPORT FAILED
---=========================================
-
-LocalPlayer.OnTeleport:Connect(function(state)
-
-    if state == Enum.TeleportState.Failed then
-        detectError("769")
-    end
-end)
-
---=========================================
--- PLAYER DISCONNECT
---=========================================
-
-LocalPlayer:GetPropertyChangedSignal("Parent"):Connect(function()
-
-    if not LocalPlayer.Parent then
-        detectError("277")
-    end
-end)
-
---=========================================
--- HEARTBEAT FREEZE DETECT
---=========================================
-
-local lastTick = tick()
-
-game:GetService("RunService").Heartbeat:Connect(function()
-    lastTick = tick()
-end)
-
-task.spawn(function()
-
-    while task.wait(10) do
-
-        if tick() - lastTick > 15 then
-            detectError("2006")
-        end
-    end
-end)
-
-print("[AsyrafHub] Monitoring Started")
+while task.wait(1) do
+    pcall(function()
+        detectError()
+    end)
+end
