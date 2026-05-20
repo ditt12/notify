@@ -1,124 +1,39 @@
---// =========================================================
---// ASYRAF HUB - KICK DETECTOR + TELEGRAM + AUTO REJOIN
---// + CONNECTED NOTIFY
---// =========================================================
-
 local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
---// ================= CONFIG =================
 local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
 local CHAT_ID = "6554802149"
 
---// ================= REQUEST =================
 local request =
     (syn and syn.request)
     or http_request
     or request
-    or (http and http.request)
 
---// ================= TELEGRAM =================
-local function sendTelegram(msg)
-    if not request then return end
+print("[DEBUG] request =", request)
 
-    pcall(function()
+local function send(msg)
+    if not request then
+        warn("HTTP request NOT supported")
+        return
+    end
+
+    local success, err = pcall(function()
         request({
             Url = "https://api.telegram.org/bot" .. TOKEN .. "/sendMessage",
             Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
+            Headers = {["Content-Type"] = "application/json"},
             Body = HttpService:JSONEncode({
                 chat_id = CHAT_ID,
                 text = msg
             })
         })
     end)
+
+    print("[DEBUG] send status:", success, err)
 end
 
---// ================= DEVICE INFO =================
-local USERNAME = LocalPlayer.Name
-local USERID = LocalPlayer.UserId
-local PLACEID = game.PlaceId
-local JOBID = game.JobId
-
---// ================= CONNECTED NOTIFY =================
-sendTelegram(table.concat({
-    "✅ ASYRAF HUB CONNECTED",
-    "",
-    "👤 User: " .. USERNAME,
-    "🆔 UserId: " .. USERID,
-    "",
-    "🎮 PlaceId: " .. PLACEID,
-    "📡 JobId: " .. JOBID,
-    "",
-    "⏱ Time: " .. os.date("%H:%M:%S")
-}, "\n"))
-
-print("[ASYRAF HUB] Connected sent to Telegram")
-
---// ================= FORMAT =================
-local function formatMsg(reason, code)
-    return table.concat({
-        "🚨 ROBLOX KICK DETECTED",
-        "",
-        "👤 User: " .. USERNAME,
-        "🆔 UserId: " .. USERID,
-        "",
-        "🎮 PlaceId: " .. PLACEID,
-        "📡 JobId: " .. JOBID,
-        "",
-        "❌ Code: " .. tostring(code),
-        "📄 Reason: " .. tostring(reason),
-        "",
-        "⏱ Time: " .. os.date("%H:%M:%S")
-    }, "\n")
-end
-
---// ================= AUTO REJOIN =================
-local function rejoin()
-    task.wait(2)
-    pcall(function()
-        TeleportService:Teleport(PLACEID, LocalPlayer)
-    end)
-end
-
---// ================= KICK HOOK =================
-local mt = getrawmetatable(game)
-setreadonly(mt, false)
-
-local old = mt.__namecall
-
-mt.__namecall = newcclosure(function(self, ...)
-    local method = getnamecallmethod()
-    local args = {...}
-
-    if method == "Kick" then
-        local reason = args[1] or "Unknown"
-
-        local code =
-            tostring(reason):match("(%d%d%d)")
-            or "UNKNOWN"
-
-        sendTelegram(formatMsg(reason, code))
-
-        warn("[ASYRAF HUB] KICK:", reason)
-
-        task.spawn(rejoin)
-    end
-
-    return old(self, ...)
-end)
-
---// ================= LOG DETECTOR =================
-game:GetService("LogService").MessageOut:Connect(function(msg, type)
-    if type == Enum.MessageType.MessageError then
-        local code = msg:match("(%d%d%d)") or "UNKNOWN"
-        sendTelegram(formatMsg(msg, code))
-    end
-end)
-
-print("[ASYRAF HUB] Running...")
+--// CONNECTED TEST
+send("✅ CONNECTED TEST: " .. LocalPlayer.Name)
+print("CONNECTED SENT (if HTTP works)")
