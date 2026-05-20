@@ -1,9 +1,11 @@
-local Players = game:GetService("Players")
+--// TELEGRAM CONNECTED TEST
+
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
 
-local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
+local TOKEN = "ISI_TOKEN_KAMU_DI_SINI"
 local CHAT_ID = "6554802149"
 
 local request =
@@ -11,22 +13,22 @@ local request =
     or http_request
     or request
 
-print("[DEBUG] request =", request)
+if not request then
+    warn("HTTP request not supported")
+    return
+end
 
-local function send(msg)
-    if not request then
-        warn("HTTP request NOT supported")
-        return
-    end
-
+local function send(text)
     local success, err = pcall(function()
         request({
             Url = "https://api.telegram.org/bot" .. TOKEN .. "/sendMessage",
             Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
             Body = HttpService:JSONEncode({
                 chat_id = CHAT_ID,
-                text = msg
+                text = text
             })
         })
     end)
@@ -34,6 +36,5 @@ local function send(msg)
     print("[DEBUG] send status:", success, err)
 end
 
---// CONNECTED TEST
-send("✅ CONNECTED TEST: " .. LocalPlayer.Name)
-print("CONNECTED SENT (if HTTP works)")
+send("✅ CONNECTED TEST\nUser: " .. LocalPlayer.Name)
+print("CONNECTED SENT")
