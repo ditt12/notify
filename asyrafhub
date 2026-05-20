@@ -1,5 +1,6 @@
 --// =========================================================
---// ASYRAF HUB - KICK CODE DETECTOR + TELEGRAM + AUTO REJOIN
+--// ASYRAF HUB - KICK DETECTOR + TELEGRAM + AUTO REJOIN
+--// + CONNECTED NOTIFY
 --// =========================================================
 
 local Players = game:GetService("Players")
@@ -21,10 +22,7 @@ local request =
 
 --// ================= TELEGRAM =================
 local function sendTelegram(msg)
-    if not request then
-        warn("No HTTP request support")
-        return
-    end
+    if not request then return end
 
     pcall(function()
         request({
@@ -41,16 +39,37 @@ local function sendTelegram(msg)
     end)
 end
 
+--// ================= DEVICE INFO =================
+local USERNAME = LocalPlayer.Name
+local USERID = LocalPlayer.UserId
+local PLACEID = game.PlaceId
+local JOBID = game.JobId
+
+--// ================= CONNECTED NOTIFY =================
+sendTelegram(table.concat({
+    "✅ ASYRAF HUB CONNECTED",
+    "",
+    "👤 User: " .. USERNAME,
+    "🆔 UserId: " .. USERID,
+    "",
+    "🎮 PlaceId: " .. PLACEID,
+    "📡 JobId: " .. JOBID,
+    "",
+    "⏱ Time: " .. os.date("%H:%M:%S")
+}, "\n"))
+
+print("[ASYRAF HUB] Connected sent to Telegram")
+
 --// ================= FORMAT =================
 local function formatMsg(reason, code)
     return table.concat({
         "🚨 ROBLOX KICK DETECTED",
         "",
-        "👤 User: " .. LocalPlayer.Name,
-        "🆔 UserId: " .. LocalPlayer.UserId,
+        "👤 User: " .. USERNAME,
+        "🆔 UserId: " .. USERID,
         "",
-        "🎮 PlaceId: " .. game.PlaceId,
-        "📡 JobId: " .. game.JobId,
+        "🎮 PlaceId: " .. PLACEID,
+        "📡 JobId: " .. JOBID,
         "",
         "❌ Code: " .. tostring(code),
         "📄 Reason: " .. tostring(reason),
@@ -62,13 +81,12 @@ end
 --// ================= AUTO REJOIN =================
 local function rejoin()
     task.wait(2)
-
     pcall(function()
-        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+        TeleportService:Teleport(PLACEID, LocalPlayer)
     end)
 end
 
---// ================= DETECT KICK =================
+--// ================= KICK HOOK =================
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 
@@ -87,7 +105,7 @@ mt.__namecall = newcclosure(function(self, ...)
 
         sendTelegram(formatMsg(reason, code))
 
-        warn("[ASYRAF HUB] KICK DETECTED:", reason)
+        warn("[ASYRAF HUB] KICK:", reason)
 
         task.spawn(rejoin)
     end
@@ -95,13 +113,12 @@ mt.__namecall = newcclosure(function(self, ...)
     return old(self, ...)
 end)
 
---// ================= LOG BACKUP DETECTOR =================
+--// ================= LOG DETECTOR =================
 game:GetService("LogService").MessageOut:Connect(function(msg, type)
     if type == Enum.MessageType.MessageError then
         local code = msg:match("(%d%d%d)") or "UNKNOWN"
-
         sendTelegram(formatMsg(msg, code))
     end
 end)
 
-print("[ASYRAF HUB] Kick detector running...")
+print("[ASYRAF HUB] Running...")
