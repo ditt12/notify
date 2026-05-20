@@ -17,8 +17,8 @@
 --// TELEGRAM CONFIG
 --// =========================================================
 
-local TOKEN = "MASUKKAN_BOT_TOKEN"
-local CHAT_ID = "MASUKKAN_CHAT_ID"
+local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
+local CHAT_ID = "6554802149"
 
 --// =========================================================
 --// SERVICES
