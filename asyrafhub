@@ -1,0 +1,198 @@
+--// AsyrafHub Error Monitoring
+--// Telegram Styled Embed Notify
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local CONFIG_FILE = "asyrafhub.json"
+
+local config
+local restartCount = 0
+
+--========================
+-- FILE SYSTEM
+--========================
+
+local function isFile(path)
+    return isfile and isfile(path)
+end
+
+local function saveConfig(data)
+    writefile(CONFIG_FILE, HttpService:JSONEncode(data))
+end
+
+local function loadConfig()
+    return HttpService:JSONDecode(readfile(CONFIG_FILE))
+end
+
+--========================
+-- FIRST EXECUTE
+--========================
+
+if isFile(CONFIG_FILE) then
+    config = loadConfig()
+    print("[AsyrafHub] Config Loaded")
+else
+    local token = tostring(
+        game:GetService("StarterGui"):PromptTextInput(
+            "Telegram Bot Token",
+            "Input Bot Token"
+        )
+    )
+
+    local chatid = tostring(
+        game:GetService("StarterGui"):PromptTextInput(
+            "Telegram Chat ID",
+            "Input Chat ID"
+        )
+    )
+
+    config = {
+        token = token,
+        chat_id = chatid
+    }
+
+    saveConfig(config)
+
+    print("[AsyrafHub] Config Saved")
+end
+
+--========================
+-- TELEGRAM EMBED
+--========================
+
+local function sendEmbed(title, desc, color, fields)
+    local url =
+        "https://api.telegram.org/bot"
+        .. config.token
+        .. "/sendMessage"
+
+    local text = "━━━━━━━━━━━━━━\n"
+    text = text .. "*" .. title .. "*\n\n"
+    text = text .. desc .. "\n\n"
+
+    for _,v in pairs(fields) do
+        text = text .. v .. "\n"
+    end
+
+    text = text .. "\n━━━━━━━━━━━━━━"
+
+    local data = {
+        chat_id = config.chat_id,
+        text = text,
+        parse_mode = "Markdown"
+    }
+
+    local requestfunc =
+        (syn and syn.request)
+        or (http and http.request)
+        or http_request
+        or request
+
+    if requestfunc then
+        requestfunc({
+            Url = url,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(data)
+        })
+    end
+end
+
+--========================
+-- START NOTIFY
+--========================
+
+local gameName = "Unknown"
+
+pcall(function()
+    gameName = MarketplaceService:GetProductInfo(game.PlaceId).Name
+end)
+
+sendEmbed(
+    "🟢 Account Started",
+    "Account `" .. LocalPlayer.Name .. "` started monitoring",
+    65280,
+    {
+        "👤 *Username*\n`" .. LocalPlayer.Name .. "`",
+        "🎮 *Game*\n`" .. gameName .. "`",
+        "🆔 *Place ID*\n`" .. game.PlaceId .. "`",
+        "📍 *Job ID*\n`" .. game.JobId .. "`",
+        "📡 *Status*\n`Running`",
+        "⏱️ *Time*\n`" .. os.date("%X") .. "`"
+    }
+)
+
+--========================
+-- ERROR LIST
+--========================
+
+local ErrorCodes = {
+    ["264"] = "Account launched from another device",
+    ["266"] = "Connection timeout",
+    ["267"] = "Kicked from game",
+    ["268"] = "Unexpected client behavior",
+    ["277"] = "Lost connection",
+    ["279"] = "Failed connection",
+    ["529"] = "HTTP Error",
+    ["769"] = "Teleport failed"
+}
+
+--========================
+-- DETECT ERROR
+--========================
+
+local function detectError(msg)
+    for code, reason in pairs(ErrorCodes) do
+        if string.find(msg, code) then
+
+            restartCount += 1
+
+            sendEmbed(
+                "🔴 Crash Detected",
+                "Account `" .. LocalPlayer.Name .. "` crashed and restarting",
+                16711680,
+                {
+                    "👤 *Username*\n`" .. LocalPlayer.Name .. "`",
+                    "⚠️ *Error Code*\n`" .. code .. "`",
+                    "📄 *Reason*\n`" .. reason .. "`",
+                    "🔁 *Restart Count*\n`" .. restartCount .. "`",
+                    "📡 *Action*\n`Auto Restarting...`",
+                    "⏱️ *Time*\n`" .. os.date("%X") .. "`"
+                }
+            )
+
+            warn("[AsyrafHub] Error Detected:", code)
+
+            break
+        end
+    end
+end
+
+--========================
+-- GUI ERROR DETECTION
+--========================
+
+GuiService.ErrorMessageChanged:Connect(function(message)
+    if message and message ~= "" then
+        detectError(message)
+    end
+end)
+
+--========================
+-- PLAYER DISCONNECT
+--========================
+
+LocalPlayer:GetPropertyChangedSignal("Parent"):Connect(function()
+    if not LocalPlayer.Parent then
+        detectError("277")
+    end
+end)
+
+print("[AsyrafHub] Monitoring Started")
