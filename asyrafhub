@@ -1,248 +1,107 @@
 --// =========================================================
---// ASYRAF HUB - ROBLOX ERROR DETECTOR
---// TELEGRAM ERROR NOTIFIER
---// =========================================================
-
---[[
-    FITUR:
-    ✅ Detect Roblox Error Code
-    ✅ Notify Telegram otomatis
-    ✅ Full error message
-    ✅ Username auto detect
-    ✅ PlaceId + JobId
-    ✅ Clean format
-]]
-
---// =========================================================
---// TELEGRAM CONFIG
---// =========================================================
-
-local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
-local CHAT_ID = "6554802149"
-
---// =========================================================
---// SERVICES
+--// ASYRAF HUB - KICK CODE DETECTOR + TELEGRAM + AUTO REJOIN
 --// =========================================================
 
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
 local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
 local LocalPlayer = Players.LocalPlayer
 
---// =========================================================
---// REQUEST FUNCTION
---// =========================================================
+--// ================= CONFIG =================
+local TOKEN = "8538531375:AAHJYgPsvydBm-HTu7_VYVfP17BrUv2c3g8"
+local CHAT_ID = "6554802149"
 
+--// ================= REQUEST =================
 local request =
     (syn and syn.request)
-    or (http and http.request)
     or http_request
     or request
-    or fluxus and fluxus.request
+    or (http and http.request)
 
-if not request then
-    warn("Executor tidak support request")
-    return
-end
-
---// =========================================================
---// DEVICE / GAME INFO
---// =========================================================
-
-local USERNAME = LocalPlayer.Name
-local DISPLAYNAME = LocalPlayer.DisplayName
-local USERID = LocalPlayer.UserId
-
-local PLACEID = game.PlaceId
-local JOBID = game.JobId
-
-local EXECUTOR = identifyexecutor and identifyexecutor() or "Unknown"
-
-local function getGameName()
-    local success, result = pcall(function()
-        return game:GetService("MarketplaceService"):GetProductInfo(PLACEID).Name
-    end)
-
-    if success then
-        return result
+--// ================= TELEGRAM =================
+local function sendTelegram(msg)
+    if not request then
+        warn("No HTTP request support")
+        return
     end
 
-    return "Unknown"
-end
-
-local GAMENAME = getGameName()
-
---// =========================================================
---// TELEGRAM SEND
---// =========================================================
-
-local function sendTelegram(message)
-    local url =
-        "https://api.telegram.org/bot"
-        .. TOKEN ..
-        "/sendMessage"
-
-    local data = {
-        chat_id = CHAT_ID,
-        text = message,
-        parse_mode = "Markdown"
-    }
-
-    local body = HttpService:JSONEncode(data)
-
-    local success, response = pcall(function()
-        return request({
-            Url = url,
+    pcall(function()
+        request({
+            Url = "https://api.telegram.org/bot" .. TOKEN .. "/sendMessage",
             Method = "POST",
             Headers = {
                 ["Content-Type"] = "application/json"
             },
-            Body = body
+            Body = HttpService:JSONEncode({
+                chat_id = CHAT_ID,
+                text = msg
+            })
         })
     end)
-
-    if success then
-        print("[ASYRAF HUB] Telegram notify sent")
-    else
-        warn("[ASYRAF HUB] Failed send telegram")
-    end
 end
 
---// =========================================================
---// FORMAT MESSAGE
---// =========================================================
-
-local function buildMessage(errorCode, fullError)
-    local text =
-[[
-🚨 *ROBLOX ERROR DETECTED*
-
-━━━━━━━━━━━━━━
-👤 *PLAYER INFO*
-━━━━━━━━━━━━━━
-
-🪪 Username:
-`]] .. USERNAME .. [[`
-
-👤 Display Name:
-`]] .. DISPLAYNAME .. [[`
-
-🆔 UserId:
-`]] .. USERID .. [[`
-
-━━━━━━━━━━━━━━
-🎮 *GAME INFO*
-━━━━━━━━━━━━━━
-
-🎯 Game:
-`]] .. GAMENAME .. [[`
-
-🎮 PlaceId:
-`]] .. PLACEID .. [[`
-
-📡 JobId:
-`]] .. JOBID .. [[`
-
-━━━━━━━━━━━━━━
-💻 *DEVICE INFO*
-━━━━━━━━━━━━━━
-
-⚡ Executor:
-`]] .. EXECUTOR .. [[`
-
-━━━━━━━━━━━━━━
-❌ *ERROR INFO*
-━━━━━━━━━━━━━━
-
-🚫 Error Code:
-`]] .. tostring(errorCode) .. [[`
-
-📄 Full Error:
-``` id="y6k0a6"
-]] .. tostring(fullError) .. [[
-``` id="o02dfm"
-
-━━━━━━━━━━━━━━
-⏱️ Time:
-`]] .. os.date("%d/%m/%Y %H:%M:%S") .. [[`
-]]
-
-    return text
+--// ================= FORMAT =================
+local function formatMsg(reason, code)
+    return table.concat({
+        "🚨 ROBLOX KICK DETECTED",
+        "",
+        "👤 User: " .. LocalPlayer.Name,
+        "🆔 UserId: " .. LocalPlayer.UserId,
+        "",
+        "🎮 PlaceId: " .. game.PlaceId,
+        "📡 JobId: " .. game.JobId,
+        "",
+        "❌ Code: " .. tostring(code),
+        "📄 Reason: " .. tostring(reason),
+        "",
+        "⏱ Time: " .. os.date("%H:%M:%S")
+    }, "\n")
 end
 
---// =========================================================
---// ERROR DETECTION
---// =========================================================
+--// ================= AUTO REJOIN =================
+local function rejoin()
+    task.wait(2)
 
-local alreadyDetected = false
-
-local function detectError()
-    if alreadyDetected then
-        return
-    end
-
-    local PromptGui = CoreGui:FindFirstChild("RobloxPromptGui")
-
-    if not PromptGui then
-        return
-    end
-
-    local TextLabel =
-        PromptGui:FindFirstChildWhichIsA(
-            "TextLabel",
-            true
-        )
-
-    if not TextLabel then
-        return
-    end
-
-    local text = TextLabel.Text
-
-    if not text or text == "" then
-        return
-    end
-
-    local errorCode =
-        text:match("Error Code:?%s*(%d+)")
-        or text:match("error code:?%s*(%d+)")
-        or text:match("(%d+)")
-
-    if errorCode then
-        alreadyDetected = true
-
-        print("[ASYRAF HUB] Error detected:", errorCode)
-
-        local msg = buildMessage(errorCode, text)
-
-        sendTelegram(msg)
-    end
-end
-
---// =========================================================
---// START
---// =========================================================
-
-print([[
-=====================================
-      ASYRAF HUB ERROR DETECTOR
-=====================================
-
-Status  : Running
-Username: ]] .. USERNAME .. [[
-Game    : ]] .. GAMENAME .. [[
-
-Waiting for Roblox error...
-]])
-
---// =========================================================
---// LOOP
---// =========================================================
-
-while task.wait(1) do
     pcall(function()
-        detectError()
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
     end)
 end
+
+--// ================= DETECT KICK =================
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+
+local old = mt.__namecall
+
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+
+    if method == "Kick" then
+        local reason = args[1] or "Unknown"
+
+        local code =
+            tostring(reason):match("(%d%d%d)")
+            or "UNKNOWN"
+
+        sendTelegram(formatMsg(reason, code))
+
+        warn("[ASYRAF HUB] KICK DETECTED:", reason)
+
+        task.spawn(rejoin)
+    end
+
+    return old(self, ...)
+end)
+
+--// ================= LOG BACKUP DETECTOR =================
+game:GetService("LogService").MessageOut:Connect(function(msg, type)
+    if type == Enum.MessageType.MessageError then
+        local code = msg:match("(%d%d%d)") or "UNKNOWN"
+
+        sendTelegram(formatMsg(msg, code))
+    end
+end)
+
+print("[ASYRAF HUB] Kick detector running...")
